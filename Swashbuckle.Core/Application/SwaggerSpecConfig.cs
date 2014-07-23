@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Web.Http.Description;
 using System.Linq;
 using Swashbuckle.Swagger;
+using Microsoft.Owin;
 
 namespace Swashbuckle.Application
 {
@@ -19,6 +20,8 @@ namespace Swashbuckle.Application
 
         internal Func<HttpRequestMessage, string> BasePathResolver { get; set; }
         internal Func<HttpRequestMessage, string> TargetVersionResolver { get; set; }
+
+        private string _owinDescriptionsKey;
 
         private bool _ignoreObsoleteActions;
         private Func<ApiDescription, string, bool> _versionSupportResolver;
@@ -42,6 +45,12 @@ namespace Swashbuckle.Application
 
             _modelFilterFactories = new List<Func<IModelFilter>>();
             _operationFilterFactories = new List<Func<IOperationFilter>>();
+        }
+
+        public SwaggerSpecConfig OwinDescriptionsKey(string key)
+        {
+            _owinDescriptionsKey = key;
+            return this;
         }
 
         public SwaggerSpecConfig ResolveBasePathUsing(Func<HttpRequestMessage, string> basePathResolver)
@@ -125,12 +134,30 @@ namespace Swashbuckle.Application
             return this;
         }
 
-        internal ISwaggerProvider GetSwaggerProvider(IApiExplorer apiExplorer)
+        internal ISwaggerProvider GetSwaggerProvider(IApiExplorer apiExplorer, IOwinContext context)
         {
             var modelFilters = _modelFilterFactories.Select((f) => f());
             var operationFilters = _operationFilterFactories.Select((f) => f());
 
-            return new ApiExplorerAdapter(
+            var key = SwaggerSpecConfig.StaticInstance._owinDescriptionsKey;
+            ApiDescription[] descriptions;
+            if (context != null &&
+                !string.IsNullOrEmpty(key) &&
+                (descriptions = context.Get<ApiDescription[]>(key)) != null)
+            {
+                return new OwinExplorerAdapter(
+                descriptions,
+                _ignoreObsoleteActions,
+                _versionSupportResolver,
+                _resourceNameResolver,
+                _customTypeMappings,
+                _polymorphicTypes,
+                modelFilters,
+                operationFilters);
+            }
+            else
+            {
+                return new ApiExplorerAdapter(
                 apiExplorer,
                 _ignoreObsoleteActions,
                 _versionSupportResolver,
@@ -139,6 +166,7 @@ namespace Swashbuckle.Application
                 _polymorphicTypes,
                 modelFilters,
                 operationFilters);
+            }
         }
     }
 }

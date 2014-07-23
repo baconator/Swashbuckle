@@ -1,12 +1,15 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Net.Http;
 using Newtonsoft.Json;
 using Swashbuckle.Swagger;
+using Microsoft.Owin;
 
 namespace Swashbuckle.Application
 {
@@ -25,7 +28,7 @@ namespace Swashbuckle.Application
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var swaggerProvider = _config.GetSwaggerProvider(request.GetConfiguration().Services.GetApiExplorer());
+            var swaggerProvider = _config.GetSwaggerProvider(request.GetConfiguration().Services.GetApiExplorer(), request.GetOwinContext());
             
             var basePath = _config.BasePathResolver(request);
             var version = _config.TargetVersionResolver(request);

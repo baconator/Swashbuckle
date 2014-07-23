@@ -1,7 +1,13 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Web.Http.Description;
+using System.Xml.Serialization;
 
 namespace Swashbuckle.Swagger
 {
@@ -10,9 +16,9 @@ namespace Swashbuckle.Swagger
         protected const string SwaggerVersion = "1.2";
 
         private readonly IApiExplorer _apiExplorer;
-        private readonly bool _ignoreObsoleteActions;
-        private readonly Func<ApiDescription, string, bool> _versionSupportResolver;
-        private readonly Func<ApiDescription, string> _resourceNameResolver;
+        protected readonly bool _ignoreObsoleteActions;
+        protected readonly Func<ApiDescription, string, bool> _versionSupportResolver;
+        protected readonly Func<ApiDescription, string> _resourceNameResolver;
         private readonly Dictionary<Type, Func<DataType>> _customTypeMappings;
         private readonly IEnumerable<PolymorphicType> _polymorphicTypes;
         private readonly IEnumerable<IModelFilter> _modelFilters;
@@ -80,7 +86,7 @@ namespace Swashbuckle.Swagger
             };
         }
 
-        private IEnumerable<IGrouping<string, ApiDescription>> GetApplicableApiDescriptions(string version)
+        protected virtual IEnumerable<IGrouping<string, ApiDescription>> GetApplicableApiDescriptions(string version)
         {
             return _apiExplorer.ApiDescriptions
                 .Where(apiDesc => !_ignoreObsoleteActions || !apiDesc.IsMarkedObsolete())
