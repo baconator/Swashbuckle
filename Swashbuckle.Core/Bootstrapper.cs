@@ -7,12 +7,12 @@ namespace Swashbuckle
     {
         public static void Init(HttpConfiguration config)
         {
-            config.Routes.MapHttpRoute(
+            /*config.Routes.MapHttpRoute(
                 "swagger_root",
                 "swagger",
                 null,
                 null,
-                new RedirectHandler("swagger/ui/index.html"));
+                new RedirectHandler("swagger/ui/index.html"));*/
 
             config.Routes.MapHttpRoute(
                 "swagger_api_docs",
@@ -21,12 +21,12 @@ namespace Swashbuckle
                 null,
                 new SwaggerSpecHandler());
 
-            config.Routes.MapHttpRoute(
+            /*config.Routes.MapHttpRoute(
                 "swagger_ui",
                 "swagger/ui/{*uiPath}",
                 null,
                 new { uiPath = @".+" },
-                new SwaggerUiHandler());
+                new SwaggerUiHandler());*/
         }
     }
 }
