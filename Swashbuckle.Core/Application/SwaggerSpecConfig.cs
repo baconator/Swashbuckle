@@ -21,7 +21,7 @@ namespace Swashbuckle.Application
         internal Func<HttpRequestMessage, string> BasePathResolver { get; set; }
         internal Func<HttpRequestMessage, string> TargetVersionResolver { get; set; }
 
-        private string _owinDescriptionsKey;
+        internal string OwinDescriptionsKey;
 
         private bool _ignoreObsoleteActions;
         private Func<ApiDescription, string, bool> _versionSupportResolver;
@@ -49,7 +49,7 @@ namespace Swashbuckle.Application
 
         public SwaggerSpecConfig PreferOwinDescriptions(string key)
         {
-            _owinDescriptionsKey = key;
+            OwinDescriptionsKey = key;
             return this;
         }
 
@@ -139,7 +139,7 @@ namespace Swashbuckle.Application
             var modelFilters = _modelFilterFactories.Select((f) => f());
             var operationFilters = _operationFilterFactories.Select((f) => f());
 
-            var key = SwaggerSpecConfig.StaticInstance._owinDescriptionsKey;
+            var key = SwaggerSpecConfig.StaticInstance.OwinDescriptionsKey;
             ApiDescription[] descriptions;
             if (context != null &&
                 !string.IsNullOrEmpty(key) &&
