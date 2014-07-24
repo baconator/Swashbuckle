@@ -47,7 +47,7 @@ namespace Swashbuckle.Application
             _operationFilterFactories = new List<Func<IOperationFilter>>();
         }
 
-        public SwaggerSpecConfig OwinDescriptionsKey(string key)
+        public SwaggerSpecConfig PreferOwinDescriptions(string key)
         {
             _owinDescriptionsKey = key;
             return this;
