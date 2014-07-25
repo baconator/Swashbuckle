@@ -12,15 +12,26 @@ namespace Swashbuckle.Middleware
 {
     public static class MiddlewareExtensions
     {
-        public static void UseSwashbuckleDocumentation(this IAppBuilder app, string owinEnvironmentKey, Action<SwaggerSpecConfig> configurator)
+        public static void UseSwashbuckleDocumentation(this IAppBuilder app, Action<SwaggerSpecConfig> configurator)
         {
             var config = new HttpConfiguration();
             app.UseWebApi(config);
-            Bootstrapper.Init(config, false);
-            SwaggerSpecConfig.Customize(c => {
-                c.PreferOwinDescriptions(owinEnvironmentKey);
-                configurator(c);
-            });
+            Bootstrapper.InitSpec(config);
+            SwaggerSpecConfig.Customize(configurator);
+        }
+
+        public static void UseSwaggerUi(this IAppBuilder app)
+        {
+            var config = new HttpConfiguration();
+            Bootstrapper.InitUi(config);
+
+            // TODO: finishme
+            //app.UseStaticFiles
+        }
+
+        public static void ExportApiDescriptions(this IAppBuilder app, HttpConfiguration config)
+        {
+            ExportApiDescriptions(app, config.Services.GetApiExplorer().ApiDescriptions);
         }
 
         public static void ExportApiDescriptions(this IAppBuilder app, IEnumerable<ApiDescription> descriptions)

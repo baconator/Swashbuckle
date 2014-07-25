@@ -37,6 +37,8 @@ namespace Swashbuckle.Application
             BasePathResolver = (req) => req.RequestUri.GetLeftPart(UriPartial.Authority) + req.GetConfiguration().VirtualPathRoot.TrimEnd('/');
             TargetVersionResolver = (req) => "1.0";
 
+            OwinDescriptionsKey = Middleware.Defaults.OwinApiDescriptionsKey;
+
             _ignoreObsoleteActions = false;
             _versionSupportResolver = (apiDesc, version) => true;
             _resourceNameResolver = (apiDesc) => apiDesc.ActionDescriptor.ControllerDescriptor.ControllerName;
@@ -47,7 +49,7 @@ namespace Swashbuckle.Application
             _operationFilterFactories = new List<Func<IOperationFilter>>();
         }
 
-        public SwaggerSpecConfig PreferOwinDescriptions(string key)
+        public SwaggerSpecConfig FindOwinApiDescriptionsIn(string key)
         {
             OwinDescriptionsKey = key;
             return this;

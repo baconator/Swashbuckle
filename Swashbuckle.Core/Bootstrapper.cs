@@ -5,7 +5,13 @@ namespace Swashbuckle
 {
     public static class Bootstrapper
     {
-        public static void Init(HttpConfiguration config, bool hostUi = true)
+        public static void Init(HttpConfiguration config)
+        {
+            InitSpec(config);
+            InitUi(config);
+        }
+
+        internal static void InitSpec(HttpConfiguration config)
         {
             config.Routes.MapHttpRoute(
                 "swagger_api_docs",
@@ -13,23 +19,23 @@ namespace Swashbuckle
                 new { resourceName = RouteParameter.Optional },
                 null,
                 new SwaggerSpecHandler());
+        }
 
-            if (hostUi)
-            {
-                config.Routes.MapHttpRoute(
+        internal static void InitUi(HttpConfiguration config)
+        {
+            config.Routes.MapHttpRoute(
                     "swagger_root",
                     "swagger",
                     null,
                     null,
                     new RedirectHandler("swagger/ui/index.html"));
 
-                config.Routes.MapHttpRoute(
-                    "swagger_ui",
-                    "swagger/ui/{*uiPath}",
-                    null,
-                    new { uiPath = @".+" },
-                    new SwaggerUiHandler());
-            }
+            config.Routes.MapHttpRoute(
+                "swagger_ui",
+                "swagger/ui/{*uiPath}",
+                null,
+                new { uiPath = @".+" },
+                new SwaggerUiHandler());
         }
     }
 }
