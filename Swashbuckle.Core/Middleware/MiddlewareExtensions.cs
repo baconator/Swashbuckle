@@ -23,15 +23,15 @@ namespace Swashbuckle.Middleware
             });
         }
 
-        public static void ExportApiDescriptions(this IAppBuilder app, HttpConfiguration config)
+        public static void ExportApiDescriptions(this IAppBuilder app, IEnumerable<ApiDescription> descriptions)
         {
             app.Use(async (context, next) => {
                 var owinKey = SwaggerSpecConfig.StaticInstance.OwinDescriptionsKey;
 
                 var existing = context.Get<ApiDescription[]>(owinKey) ?? new ApiDescription[0];
-                var descriptions = config.Services.GetApiExplorer().ApiDescriptions.Concat(existing);
+                var concatenatedDescriptions = descriptions.Concat(existing);
 
-                context.Set(owinKey, descriptions.ToArray());
+                context.Set(owinKey, concatenatedDescriptions.ToArray());
 
                 await next();
             });
